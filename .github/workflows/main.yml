@@ -4,6 +4,11 @@ on:
   push:
   pull_request:
   workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version number for tagging'
+        required: true
+        type: string
   
 permissions:
   checks: write
@@ -14,7 +19,6 @@ permissions:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
@@ -22,12 +26,18 @@ jobs:
     # It is not clear which versions these are, 
     # so it might be a good idea to specify them via an action like actions/setup-node@v4
     - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
     - name: Install
       run: yarn
+
     - name: Unit tests
       run: yarn test
+
     - name: Build
       run: yarn build
+
     - name: Integration tests
       run: yarn test:e2e
 
@@ -36,3 +46,9 @@ jobs:
       if: always()
       with:
         files: 'reports/*.xml'
+
+    - name: Tag Commit
+      if: github.event_name == 'workflow_dispatch'
+      run: |
+        git tag ${{ inputs.version }}
+        git push origin ${{ inputs.version }}
