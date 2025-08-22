@@ -15,6 +15,12 @@ pipeline {
             steps {
                 sh 'yarn build'
             }
+            post {
+                always {
+                    // One or more steps need to be included within each condition's block.
+                    publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, icon: '', keepAll: false, reportDir: '**/reports/**/*.xml', reportFiles: 'index.html', reportName: 'HTML Report', reportTitles: '', useWrapperFileDirectly: true])
+                }
+            }
         }
 
         stage('unit test') {
