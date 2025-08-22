@@ -32,6 +32,11 @@ pipeline {
             steps {
                 sh 'yarn test:e2e'
             }
+            post {
+                always {
+                    junit allowEmptyResults: true, testResults: 'reports/cypress-junit.xml'
+                }
+            }
         }
 
         stage('deploy') {
